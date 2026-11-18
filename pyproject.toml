@@ -1,0 +1,116 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "recording-transcriber"
+version = "0.0.0"
+description = "Transcribe recordings into clean transcripts with named speakers, a protocol and an agenda."
+license = "GPL-3.0-or-later"
+authors = [
+    "Daniel Muehlbachler-Pietrzykowski <daniel.muehlbachler@niftyside.io>",
+]
+readme = "README.md"
+repository = "https://github.com/muhlba91/recording-transcriber"
+keywords = ["transcription", "gemini", "diarization", "colab", "speech-to-text"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+]
+
+[tool.poetry.scripts]
+recording-transcriber = "recording_transcriber.cli:main"
+
+[tool.poetry.dependencies]
+# matches the Google Colab runtime
+python = ">=3.13,<3.14"
+google-genai = "^3.3.0"
+httpx = "^0.28.1"
+pydantic = "^2.14.0"
+pyyaml = "^6.0.3"
+python-docx = "^1.2.0"
+imageio-ffmpeg = "^0.8.1"
+rapidfuzz = { version = "^3.14.0", optional = true }
+
+[tool.poetry.extras]
+eval = ["rapidfuzz"]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^9.0.0"
+pytest-cov = { extras = ["toml"], version = "^7.0.0" }
+coverage = { extras = ["toml"], version = "^7.0.0" }
+pre-commit = "^4.0.0"
+ruff = "^0.17.0"
+mutmut = "^3.7.0"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--strict-markers --cov=recording_transcriber"
+testpaths = ["tests"]
+norecursedirs = [".git"]
+
+[tool.coverage.run]
+source = ["recording_transcriber"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplemented()",
+    "if __name__ == .__main__.:",
+    "main\\(\\)",
+    "parser\\..",
+    "argparse\\..",
+    # log statements (see [tool.mutmut])
+    "_LOGGER\\.",
+]
+fail_under = 95
+show_missing = true
+
+[tool.mutmut]
+source_paths = ["recording_transcriber/"]
+pytest_add_cli_args = ["-o", "addopts="]
+# tests that read shipped files next to the package
+also_copy = ["config.example.yaml", "eval/", "colab/", "examples/"]
+# log statements are not behaviour: the coverage exclusion in [tool.coverage.report] makes mutmut skip each whole
+# (multi-line) _LOGGER call (needs absolute paths: no relative_files in [tool.coverage.run]); the pattern
+# alone only covers its first line
+mutate_only_covered_lines = true
+# pure layout (Markdown tables), covered by golden tests that pin every line
+do_not_mutate = ["recording_transcriber/evaluation/leaderboard.py"]
+do_not_mutate_patterns = [
+    '_LOGGER\.',
+    # "utf-8", "UTF-8" and the locale default are the same on every supported platform
+    'encoding=',
+    # json.dumps treats ensure_ascii=None like False
+    'ensure_ascii=',
+    # codec names are case-insensitive
+    'utf-8-sig',
+    # the header scheme is the provider's wire format
+    'Bearer ',
+    # audio part and mime types are fixed wire values
+    '"type": "audio"',
+    '"mime_type": "audio/mpeg"',
+    # the client also reads the key from the environment
+    'api_key=key',
+    # any other mode string means "python", and the records hold JSON types only
+    'record = \w+\.model_dump\(mode="json"\)',
+    # None is falsy too (mutmut passes None for an argument)
+    'check=False',
+    'strict=False',
+    # tuning values with no observable effect in the tests
+    '\b(REQUEST_TIMEOUT_MS|UPLOAD_TIMEOUT_S|UPLOAD_POLL_S|MAX_OUTPUT_TOKENS)\b',
+    # best-effort cleanup of a scratch folder
+    'rmtree\(scratch, ignore_errors=True\)',
+    # the report id only has to be random and short
+    'token_hex',
+    'Random\(',
+    # initial values that are overwritten before use or falsy either way
+    '^\s+(self\._(sources|fingerprint|scratch)|schema_retried|backoff|failed|redone) = (False|\[\]|""|Path\(\))$',
+    # a symlink needs a real target, which the test cannot tell from a copy
+    'symlink_to',
+]

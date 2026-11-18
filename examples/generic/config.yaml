@@ -1,0 +1,30 @@
+---
+# A generic starting point: copy this folder, edit it, and build the app folder with
+# `mise run package <folder>`. Every key is optional; the reference of all keys is config.example.yaml.
+# Unknown keys are rejected.
+
+# version the Colab notebook installs, quoted; release-please sets it to the release this folder came with
+app_version: "0.0.0" # x-release-please-version
+local_wheels: true
+
+# provider and model per task (all Gemini; one key: GEMINI_API_KEY)
+tasks:
+  transcribe: { provider: gemini, model: gemini-4-hydrogen }
+  polish: { provider: gemini, model: gemini-4-argon }
+  reconcile: { provider: gemini, model: gemini-4-argon }
+  protocol: { provider: gemini, model: gemini-4-argon }
+  agenda: { provider: gemini, model: gemini-4-argon }
+
+# the transcript language and the words the transcript itself uses; everything else is English
+transcript:
+  language: en-US        # BCP-47, with a region (en-US, de-DE)
+  notes: Clear speech, a few speakers; keep names and technical terms as spoken.
+  quality_note: true     # checks, speakers and the accuracy estimate at the top of the transcript
+
+# fills $meeting_type and $writer_role in the prompts
+meeting:
+  type: meeting
+  writer_role: a professional minute-taker
+
+# shared glossary, relative to this file; merged before each job's context/glossary.txt
+glossary_global: glossary_global.txt

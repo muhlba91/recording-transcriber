@@ -1,0 +1,27 @@
+---
+# prose lines are not wrapped; tables and code would break at any limit
+config:
+  MD013: false
+  # GFM tables use compact |---| separators
+  MD060: false
+  # the support button needs a sized image link
+  MD033:
+    allowed_elements: [a, img]
+globs:
+  - "**/*.md"
+ignores:
+  - ".venv/**"
+  - ".mise/**"
+  - "dist/**"
+  - "release/**"
+  - "runs/**"
+  - "report/**"
+  - "scratch/**"
+  - "samples/**"
+  - "notes/**"
+  - "mutants/**"
+  - "node_modules/**"
+  - "LICENSE"
+  # templates are prompts for models, not documents
+  - "recording_transcriber/prompts/**"
+  - "examples/*/prompts/**"

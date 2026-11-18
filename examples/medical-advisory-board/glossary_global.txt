@@ -1,0 +1,3 @@
+# Shared glossary: one term per line, the spelling the transcript should use.
+# Applies to every job; each job can add its own glossary.txt. Lines starting with # are ignored.
+# Terms are only used when they were actually said; they are never inserted.

@@ -1,0 +1,36 @@
+---
+# Evaluation candidates (docs/design.md §5). Each runs as its own job in runs/eval/<id>/ on top of
+# the base config (--config, e.g. examples/medical-advisory-board/config.yaml). C0 is the legacy output, imported as is.
+# optional: path to a previous transcript, imported as is for comparison
+# legacy: path/to/transcription.txt
+
+candidates:
+  C1: { label: "Argon, pipeline", transcribe: { model: gemini-4-argon } }
+  C2: { label: "Carbon, pipeline", transcribe: { model: gemini-4-carbon } }
+  C3: { label: "Hydrogen, pipeline", transcribe: { model: gemini-4-hydrogen } }
+  C4: { label: "3.8 Flash, pipeline", transcribe: { model: gemini-3.8-flash } }
+  C5:
+    label: "3.5-transcribe verbatim + diarization, polished"
+    transcribe: { provider: gemini-transcribe, model: gemini-3.5-transcribe }
+  # C5 truncated silently after ~10 of 26 min on the sample; C5b retries with 10 min chunks
+  C5b:
+    label: "3.5-transcribe verbatim + diarization, 10 min chunks, polished"
+    transcribe: { provider: gemini-transcribe, model: gemini-3.5-transcribe }
+    chunk_minutes: 10
+  C6:
+    label: "3.5-transcribe smart + vocabulary (words only)"
+    transcribe: { provider: gemini-transcribe-smart, model: gemini-3.5-transcribe }
+    eligible: false
+    speakers: false
+  # C7/C8 use Argon, the default model: the best of C1-C4 is only known after scoring
+  C7: { label: "Argon, whole file", transcribe: { model: gemini-4-argon }, chunk_minutes: 60, eligible: false }
+  C8: { label: "Argon, denoised", transcribe: { model: gemini-4-argon }, denoise: true, eligible: false }
+  C9:
+    label: "OpenAI gpt-transcribe (words only)"
+    transcribe: { provider: openai, model: gpt-transcribe }
+    speakers: false
+    signoff: true
+  C10:
+    label: "Mistral Voxtral Mini Transcribe 3"
+    transcribe: { provider: mistral, model: voxtral-mini-transcribe-3-0 }
+    signoff: true

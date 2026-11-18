@@ -1,0 +1,26 @@
+---
+extends: default
+ignore: |
+  .venv/
+  .mise/
+  dist/
+  release/
+  runs/
+  report/
+  scratch/
+  samples/
+  notes/
+  node_modules/
+rules:
+  # flow mappings are written { key: value }
+  braces:
+    min-spaces-inside: 1
+    max-spaces-inside: 1
+  line-length:
+    max: 120
+  # values are true/false only; GitHub workflows need the "on:" key
+  truthy:
+    allowed-values: ["true", "false"]
+    check-keys: false
+  comments:
+    min-spaces-from-content: 1

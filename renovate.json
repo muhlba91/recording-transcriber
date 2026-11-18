@@ -1,0 +1,35 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "github>muhlba91/renovate-config",
+        "github>muhlba91/renovate-config:automerge(patch)",
+        "github>muhlba91/renovate-config:automerge(minor)"
+    ],
+    "enabledManagers": [
+        "github-actions",
+        "pre-commit",
+        "poetry",
+        "npm",
+        "mise"
+    ],
+    "packageRules": [
+        {
+            "description": "Renovate cannot regenerate the uv dependency graph mise keeps for pipx:poetry; bump these manually with `mise lock --bump`",
+            "matchManagers": [
+                "mise"
+            ],
+            "matchDepNames": [
+                "pipx:poetry",
+                "uv"
+            ],
+            "enabled": false
+        },
+        {
+            "description": "Python follows the Google Colab runtime (docs/design.md D7); a minor upgrade is a manual change in mise.toml and pyproject.toml",
+            "matchDepNames": [
+                "python"
+            ],
+            "allowedVersions": "<3.14.0"
+        }
+    ]
+}

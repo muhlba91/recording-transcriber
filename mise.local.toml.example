@@ -1,0 +1,9 @@
+# LOCAL SECRETS - git-ignored, never commit, never share. Replace every REPLACE_ME value you want to use.
+# Leave unused providers as REPLACE_ME (they will simply be skipped).
+[env]
+# Required: Google AI Studio paid-tier key (https://aistudio.google.com/apikey)
+GEMINI_API_KEY = "REPLACE_ME"
+
+# Optional extra providers for the model comparison (evaluation only, after an explicit OK per vendor; see docs/design.md D6)
+OPENAI_API_KEY = "REPLACE_ME"
+MISTRAL_API_KEY = "REPLACE_ME"

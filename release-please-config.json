@@ -1,0 +1,70 @@
+{
+    "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+    "packages": {
+        ".": {
+            "release-type": "python",
+            "release-as": "1.0.0",
+            "package-name": "recording-transcriber",
+            "include-component-in-tag": false,
+            "changelog-path": "CHANGELOG.md",
+            "extra-files": [
+                "config.example.yaml",
+                "examples/generic/config.yaml",
+                "examples/medical-advisory-board/config.yaml"
+            ]
+        }
+    },
+    "include-v-in-tag": true,
+    "skip-github-release": false,
+    "pull-request-title-pattern": "chore(release): release ${version}",
+    "pull-request-header": ":robot: I have created a release",
+    "label": "release",
+    "changelog-type": "default",
+    "changelog-sections": [
+        {
+            "type": "feat",
+            "section": "Features"
+        },
+        {
+            "type": "fix",
+            "section": "Bug Fixes"
+        },
+        {
+            "type": "perf",
+            "section": "Performance Improvements"
+        },
+        {
+            "type": "revert",
+            "section": "Reverts"
+        },
+        {
+            "type": "chore",
+            "section": "Miscellaneous Chores"
+        },
+        {
+            "type": "docs",
+            "section": "Documentation",
+            "hidden": true
+        },
+        {
+            "type": "refactor",
+            "section": "Code Refactoring",
+            "hidden": true
+        },
+        {
+            "type": "test",
+            "section": "Tests",
+            "hidden": true
+        },
+        {
+            "type": "build",
+            "section": "Build System",
+            "hidden": true
+        },
+        {
+            "type": "ci",
+            "section": "Continuous Integration",
+            "hidden": true
+        }
+    ]
+}

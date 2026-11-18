@@ -1,0 +1,71 @@
+---
+# Reference of every configuration key, with generic defaults. Copy it to config.yaml in the app folder and
+# keep only what differs; every key is optional and unknown keys are rejected. A ready production setup
+# with specialized prompts is in examples/medical-advisory-board/.
+
+# version the Colab notebook installs, quoted. Release-please sets it to the newest release, so a config
+# from this repository runs the version it was built with (empty: the highest wheel in the app folder, else
+# the latest on PyPI; a release candidate needs its own version, e.g. "1.1.0rc1", and a wheel)
+app_version: "0.0.0" # x-release-please-version
+# true: a wheel in the app folder wins (e.g. a release candidate); none found or false: install the pinned
+# version from PyPI
+local_wheels: true
+
+# optional custom OpenAI-compatible endpoints (text tasks only, never transcribe); the key is read from the
+# environment variable api_key_env (in Colab: a secret of the same name)
+# providers:
+#   litellm:
+#     base_url: https://llm.example/v1
+#     api_key_env: LITELLM_API_KEY
+
+# provider and model per task. Providers: gemini (any Gemini model, with the prompt), gemini-transcribe and
+# gemini-transcribe-smart (speech-to-text, transcribe only), openai, mistral (speech-to-text for transcribe,
+# chat models for the text tasks; evaluation only, production needs a per-deployment sign-off, see the README) and
+# your custom providers. Keys: GEMINI_API_KEY, OPENAI_API_KEY, MISTRAL_API_KEY; only the providers in use
+# need one. polish runs after speech-to-text models that keep fillers (gemini-transcribe).
+tasks:
+  transcribe: { provider: gemini, model: gemini-4-hydrogen }
+  polish: { provider: gemini, model: gemini-4-argon }
+  reconcile: { provider: gemini, model: gemini-4-argon }
+  protocol: { provider: gemini, model: gemini-4-argon }
+  agenda: { provider: gemini, model: gemini-4-argon }
+
+# the transcript language and the words the transcript itself uses; everything else is English
+transcript:
+  language: en           # BCP-47; Gemini's transcribe model needs a region (en-US, de-DE)
+  notes: ""              # dialect, vocabulary and orthography hints for the prompts
+  unclear_marker: "[unclear]"
+  speaker_label: "Speaker {number}"
+  quality_note: true     # checks, speakers and the accuracy estimate at the top of the transcript
+
+# fills $meeting_type ("a recorded <type>") and $writer_role ("You are <role>", with the article)
+meeting:
+  type: meeting
+  writer_role: a professional minute-taker
+
+# a folder of <name>.md files that replace the packaged prompts of the same name (agenda, polish, protocol,
+# protocol_part, reconcile_speakers, transcribe), relative to this file. An unknown file name or a
+# placeholder the packaged prompt does not have is an error; a missing placeholder is a warning.
+# prompts_dir: prompts
+
+chunk_minutes: 25      # 10-120
+denoise: false
+write_protocol: true   # protocol and agenda after the transcript
+thinking_level: low    # Gemini only: the other providers ignore it
+
+# shared glossary (one term per line), relative to this file; merged before each job's context/glossary.txt
+# glossary_global: glossary_global.txt
+
+# local folder for audio copies, relative to this file (default: system temp); never inside a job folder
+local_dir:
+
+# USD per 1M tokens, for the cost estimate in run.json (thinking counts as output), keyed by model
+prices:
+  gemini-4-argon: { input: 2.00, output: 10.00 }
+  gemini-4-hydrogen: { input: 1.50, output: 7.50 }
+  # speech-to-text models: USD per audio minute
+  gemini-3.5-transcribe: { per_minute: 0.005 }
+
+# per transcription model: evaluated word accuracy, quoted in the transcript's quality note
+# accuracy_estimates:
+#   gemini-4-hydrogen: "about 95 %"

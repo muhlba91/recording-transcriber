@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transcript comparison</title>
+<style>
+  :root { --ink: #1d232a; --muted: #5d6873; --line: #d9dee3; --accent: #2457a6; --soft: #eef3fb; --ok: #2e7d4f; --bg: #f7f8fa; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; background: #fff; border-bottom: 1px solid var(--line); padding: 10px 16px; }
+  .bar { max-width: 860px; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .bar h1 { font-size: 18px; margin: 0; flex: 1; }
+  .progress { color: var(--muted); font-size: 14px; }
+  main { max-width: 860px; margin: 0 auto; padding: 16px; }
+  section { margin-bottom: 32px; }
+  h2 { font-size: 20px; margin: 24px 0 8px; }
+  .intro, .card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+  .card.done { border-left: 4px solid var(--ok); }
+  .card h3 { margin: 0 0 8px; font-size: 15px; color: var(--muted); font-weight: 600; }
+  audio { width: 100%; margin: 4px 0 10px; }
+  .context { color: var(--muted); margin-bottom: 10px; }
+  .context mark { background: var(--soft); color: var(--accent); padding: 0 4px; border-radius: 3px; }
+  label.option { display: flex; gap: 8px; align-items: flex-start; padding: 6px 8px; border-radius: 6px; cursor: pointer; }
+  label.option:hover { background: var(--soft); }
+  label.option input { margin-top: 5px; }
+  .letter { font-weight: 600; min-width: 1.4em; }
+  input[type=text], select { font: inherit; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; width: 100%; max-width: 480px; }
+  .none-text { margin: 4px 0 0 30px; }
+  .sample { white-space: pre-wrap; max-height: 420px; overflow-y: auto; border: 1px solid var(--line); border-radius: 6px; padding: 12px; background: var(--bg); }
+  .rating { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+  .locked { color: var(--muted); font-style: italic; }
+  button { font: inherit; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--accent); background: var(--accent); color: #fff; cursor: pointer; }
+  button.secondary { background: #fff; color: var(--accent); }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .hint { color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <h1>Transcript comparison</h1>
+    <span class="progress" id="progress"></span>
+    <button id="export">Save answers</button>
+  </div>
+</header>
+<main>
+  <div class="intro">
+    <p><strong>What is this?</strong> Several transcription models transcribed the same recording. At selected places you decide which version is right. Which version comes from which model is hidden on purpose.</p>
+    <p>It takes about an hour, also in several sittings. Your answers stay saved in this browser. When done, click <strong>Save answers</strong> and put the file <code>answers.json</code> into the Drive folder.</p>
+  </div>
+
+  <section>
+    <h2>Part 1: words (about 30 minutes)</h2>
+    <p class="hint">Listen to the clip and pick the version that matches what was said. Punctuation, capitalization and fillers ("äh") do not matter. The highlighted place is the one in question.</p>
+    <div id="words"></div>
+  </section>
+
+  <section>
+    <h2>Part 2: speakers (about 15 minutes)</h2>
+    <p class="hint">Optional, but it counts a lot. Who is speaking in this clip? Pick a name, or type one that is not listed. If you do not know the person, pick "Unknown person" with a number, and reuse the same number when the same voice comes up again.</p>
+    <div id="speakers"></div>
+  </section>
+
+  <section>
+    <h2>Part 3: readability (about 10 minutes)</h2>
+    <div id="readability"></div>
+  </section>
+
+  <div class="intro actions">
+    <button id="export2">Save answers (answers.json)</button>
+    <label class="hint">Load saved answers: <input type="file" id="import" accept=".json,application/json"></label>
+  </div>
+</main>
+<script>
+const DATA = __DATA__;
+const STORE = "recording-transcriber-eval-" + DATA.id;
+const SHOWN = Math.min(DATA.readability_count, DATA.candidates.length);
+const OTHER = "__other__";
+let answers = load();
+
+function empty() {
+  return { report: DATA.id, words: {}, speakers: {}, readability: {}, readability_shown: [] };
+}
+
+function load() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE));
+    if (saved && saved.report === DATA.id) return Object.assign(empty(), saved);
+  } catch (error) { /* storage unavailable: start empty */ }
+  return empty();
+}
+
+function save() {
+  try { localStorage.setItem(STORE, JSON.stringify(answers)); } catch (error) { /* keep in memory */ }
+  progress();
+}
+
+function el(tag, attrs, ...children) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(attrs || {})) {
+    if (key === "class") node.className = value;
+    else if (key.startsWith("on")) node.addEventListener(key.slice(2), value);
+    else node.setAttribute(key, value);
+  }
+  for (const child of children) node.append(child);
+  return node;
+}
+
+function option(name, value, checked, onChange, ...content) {
+  const input = el("input", { type: "radio", name, value, onchange: onChange });
+  input.checked = checked;
+  return el("label", { class: "option" }, input, ...content);
+}
+
+function wordDone(span) {
+  const answer = answers.words[span.id];
+  return Boolean(answer && answer.choice && (answer.choice !== "none" || (answer.text || "").trim()));
+}
+
+function renderWords() {
+  const root = document.getElementById("words");
+  root.replaceChildren();
+  DATA.spans.forEach((span, index) => {
+    const answer = answers.words[span.id] || {};
+    const card = el("div", { class: "card" + (wordDone(span) ? " done" : "") });
+    const update = (patch) => {
+      answers.words[span.id] = Object.assign({}, answers.words[span.id], patch);
+      save();
+      card.classList.toggle("done", wordDone(span));
+      renderReadability();
+    };
+    card.append(
+      el("h3", {}, `Place ${index + 1} of ${DATA.spans.length}`),
+      el("audio", { controls: "", preload: "none", src: span.clip }),
+      el("div", { class: "context" }, `… ${span.before} `, el("mark", {}, "[in question]"), ` ${span.after} …`)
+    );
+    for (const variant of span.variants) {
+      card.append(option(span.id, variant.letter, answer.choice === variant.letter, () => update({ choice: variant.letter }),
+        el("span", { class: "letter" }, variant.letter), el("span", {}, variant.text || "(nothing)")));
+    }
+    const text = el("input", { type: "text", class: "none-text", placeholder: "the right words …" });
+    text.value = answer.text || "";
+    text.addEventListener("input", () => {
+      card.querySelector(`input[name="${span.id}"][value="none"]`).checked = true;
+      update({ choice: "none", text: text.value });
+    });
+    card.append(
+      option(span.id, "none", answer.choice === "none", () => update({ choice: "none" }), el("span", {}, "None of these, it should be:")),
+      text,
+      option(span.id, "unclear", answer.choice === "unclear", () => update({ choice: "unclear" }), el("span", {}, "Not understandable"))
+    );
+    root.append(card);
+  });
+}
+
+function renderSpeakers() {
+  const root = document.getElementById("speakers");
+  root.replaceChildren();
+  DATA.spots.forEach((spot, index) => {
+    const card = el("div", { class: "card" + (answers.speakers[spot.id] ? " done" : "") });
+    const listed = [...DATA.names, ...DATA.unknown];
+    const select = el("select", {}, el("option", { value: "" }, "please choose"));
+    for (const name of listed) select.append(el("option", { value: name }, name));
+    select.append(el("option", { value: OTHER }, "another name (type it)"));
+    const other = el("input", { type: "text", placeholder: "name" });
+    const saved = answers.speakers[spot.id] || "";
+    select.value = !saved || listed.includes(saved) ? saved : OTHER;
+    other.value = select.value === OTHER ? saved : "";
+    other.hidden = select.value !== OTHER;
+    const update = () => {
+      answers.speakers[spot.id] = select.value === OTHER ? other.value.trim() : select.value;
+      other.hidden = select.value !== OTHER;
+      save();
+      card.classList.toggle("done", Boolean(answers.speakers[spot.id]));
+      renderReadability();
+    };
+    select.addEventListener("change", update);
+    other.addEventListener("input", update);
+    card.append(el("h3", {}, `Clip ${index + 1} of ${DATA.spots.length}`),
+      el("audio", { controls: "", preload: "none", src: spot.clip }), select, other);
+    root.append(card);
+  });
+}
+
+// typed names may differ in case, spacing or punctuation (as scoring.py normalizes)
+function person(answer) {
+  return answer.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+}
+
+// pre-score as in scoring.py, to pick the texts for part 3; "none of these" answers only
+// count in scoring.py, which also normalizes the typed text
+function preScore(candidate) {
+  let total = 0, hits = 0;
+  for (const span of DATA.spans) {
+    const answer = answers.words[span.id];
+    if (!answer || !answer.choice || answer.choice === "unclear") continue;
+    const weight = span.medical ? DATA.medical_weight : 1;
+    total += weight;
+    const variant = span.variants.find((v) => v.who.includes(candidate.token));
+    if (variant && variant.letter === answer.choice) hits += weight;
+  }
+  const word = total ? 100 * hits / total : 0;
+  let pairs = 0, agree = 0;
+  const answered = DATA.spots.filter((spot) => answers.speakers[spot.id]);
+  for (let i = 0; i < answered.length; i++) {
+    for (let j = i + 1; j < answered.length; j++) {
+      const a = answered[i], b = answered[j];
+      pairs++;
+      if ((person(answers.speakers[a.id]) === person(answers.speakers[b.id])) === (a.who[candidate.token] === b.who[candidate.token])) agree++;
+    }
+  }
+  const speaker = candidate.speakers && pairs ? 100 * agree / pairs : 0;
+  const w = DATA.weights;
+  return w.word * word + w.speaker * speaker + w.cost * candidate.cost_score;
+}
+
+function renderReadability() {
+  const root = document.getElementById("readability");
+  root.replaceChildren();
+  // speakers are optional: a reviewer may not recognize voices from short clips
+  const complete = DATA.spans.every(wordDone);
+  if (!answers.readability_shown.length) {
+    if (!complete) {
+      root.append(el("p", { class: "locked" }, "Part 3 appears once part 1 is fully answered (answer part 2 first if you can)."));
+      return;
+    }
+    const ranked = [...DATA.candidates].sort((a, b) => preScore(b) - preScore(a)).slice(0, SHOWN);
+    answers.readability_shown = ranked.map((c) => c.token).sort(() => Math.random() - 0.5);
+    save();
+  }
+  root.append(el("p", { class: "hint" }, "Read the start of the recording in two versions. How readable and useful is each as a transcript? 1 = useless, 5 = very good."));
+  answers.readability_shown.forEach((token, index) => {
+    const candidate = DATA.candidates.find((c) => c.token === token);
+    const card = el("div", { class: "card" + (answers.readability[token] ? " done" : "") },
+      el("h3", {}, `Version ${index + 1}`), el("div", { class: "sample" }, candidate.sample));
+    const rating = el("div", { class: "rating" });
+    for (let value = 1; value <= 5; value++) {
+      rating.append(option("r-" + token, String(value), answers.readability[token] === value, () => {
+        answers.readability[token] = value;
+        save();
+        card.classList.add("done");
+      }, el("span", {}, String(value))));
+    }
+    card.append(rating);
+    root.append(card);
+  });
+}
+
+function progress() {
+  const done = DATA.spans.filter(wordDone).length + DATA.spots.filter((s) => answers.speakers[s.id]).length
+    + answers.readability_shown.filter((t) => answers.readability[t]).length;
+  const total = DATA.spans.length + DATA.spots.length + SHOWN;
+  document.getElementById("progress").textContent = `${done} of ${total} answered`;
+}
+
+function exportAnswers() {
+  const blob = new Blob([JSON.stringify(answers, null, 2)], { type: "application/json" });
+  const link = el("a", { href: URL.createObjectURL(blob), download: "answers.json" });
+  document.body.append(link);
+  link.click();
+  link.remove();
+}
+
+document.getElementById("export").addEventListener("click", exportAnswers);
+document.getElementById("export2").addEventListener("click", exportAnswers);
+document.getElementById("import").addEventListener("change", async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const loaded = JSON.parse(await file.text());
+    if (loaded.report !== DATA.id) { alert("This file belongs to another comparison."); return; }
+    answers = Object.assign(empty(), loaded);
+    save();
+    renderAll();
+  } catch (error) { alert("The file could not be read."); }
+});
+
+function renderAll() { renderWords(); renderSpeakers(); renderReadability(); progress(); }
+renderAll();
+</script>
+</body>
+</html>

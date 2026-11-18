@@ -1,0 +1,38 @@
+min_version = "2026.10.0"
+
+[settings]
+lockfile = true
+lockfile_platforms = ["macos-arm64", "linux-x64", "linux-arm64"]
+
+# Python is pinned to the newest Colab runtime (docs/design.md D7). Packages, incl. a static ffmpeg, live in ./.venv.
+[tools]
+python = "3.13.18"
+uv = "0.13.5"
+"pipx:poetry" = { version = "2.4.1", python = "3.13" }
+# linters (mise run lint); node only runs markdownlint
+node = "24.22.3"
+"npm:markdownlint-cli2" = "0.24.1"
+shellcheck = "0.11.0"
+yamllint = "1.38.0"
+
+[env]
+_.python.venv = { path = ".venv", create = true, uv_create_args = ["--seed"] }
+PYTHONDONTWRITEBYTECODE = "1"
+
+[tasks.lint]
+description = "Lint Python, Markdown, shell scripts and YAML"
+run = [
+  "ruff check recording_transcriber tests colab",
+  "ruff format --check recording_transcriber tests colab",
+  "markdownlint-cli2",
+  "shellcheck scripts/*.sh",
+  "yamllint --strict .",
+]
+
+[tasks.package]
+description = "Build the app folder in release/ and its zip in dist/: package [--wheel] [folder] (default examples/generic)"
+run = "scripts/package.sh"
+
+[tasks.release]
+description = "Check the CHANGELOG, lint, test, then package [--wheel] [folder] for the manual upload"
+run = "scripts/release.sh"

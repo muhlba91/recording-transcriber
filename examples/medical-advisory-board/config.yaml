@@ -1,0 +1,67 @@
+---
+# The production configuration for medical advisory boards and symposia. `mise run package
+# examples/medical-advisory-board` builds the app folder for the shared drive (audio_transcription/) from this
+# folder. Every key is optional; the reference of all keys is config.example.yaml. Unknown keys are rejected.
+
+# version the Colab notebook installs, quoted. Release-please sets it to the newest release, so a config
+# from this repository runs the version it was built with (empty: the highest wheel in the app folder, else
+# the latest on PyPI; a release candidate needs its own version, e.g. "1.1.0rc1", and a wheel)
+app_version: "0.0.0" # x-release-please-version
+# true: a wheel in the app folder wins (e.g. a release candidate); none found or false: install the pinned
+# version from PyPI
+local_wheels: true
+
+# provider and model per task (all Gemini; one key: GEMINI_API_KEY)
+tasks:
+  transcribe: { provider: gemini, model: gemini-4-hydrogen }   # evaluation winner (docs/design.md §5)
+  polish: { provider: gemini, model: gemini-4-argon }
+  reconcile: { provider: gemini, model: gemini-4-argon }
+  protocol: { provider: gemini, model: gemini-4-argon }
+  agenda: { provider: gemini, model: gemini-4-argon }
+
+# the transcript language and the words the transcript itself uses; everything else is English
+transcript:
+  language: de-DE        # BCP-47; Gemini's transcribe model needs a region (de-DE, not de-AT)
+  notes: >-
+    Austrian German, possibly with dialect, speakers often far from the microphone.
+    Keep Austrian vocabulary (heuer, Jänner, Spital) and write dialect in standard German orthography.
+  unclear_marker: "[unklar]"
+  speaker_label: "Sprecher {number}"
+  quality_note: true     # checks, speakers and the accuracy estimate at the top of the transcript
+
+# fills $meeting_type and $writer_role in the prompts (the prompts below use both)
+meeting:
+  type: medical advisory board or symposium
+  writer_role: a medical writer
+
+# the specialized prompts in prompts/ replace the generic packaged ones of the same file name
+prompts_dir: prompts
+
+chunk_minutes: 25      # 10-120; in the evaluation one whole-file call (C7) was no better
+denoise: false         # in the evaluation denoising (C8) made the words worse
+write_protocol: true   # protocol and agenda after the transcript
+thinking_level: low
+
+# shared glossary, relative to this file; merged before each job's context/glossary.txt
+glossary_global: glossary_global.txt
+
+# local folder for audio copies, relative to this file (default: system temp); never inside a job folder
+local_dir:
+
+# USD per 1M tokens, for the cost estimate in run.json (thinking counts as output)
+prices:
+  gemini-4-argon: { input: 2.00, output: 10.00 }     # 4.00 / 20.00 from 2026-12-01
+  gemini-4-carbon: { input: 2.00, output: 10.00 }    # 4.00 / 20.00 from 2026-12-01
+  gemini-4-hydrogen: { input: 1.50, output: 7.50 }
+  gemini-3.8-flash: { input: 0.75, output: 3.75 }    # 1.50 / 7.50 from 2027-01-01
+  # speech-to-text models: USD per audio minute
+  gemini-3.5-transcribe: { per_minute: 0.005 }
+  gpt-transcribe: { per_minute: 0.0045 }               # evaluation only (design D6)
+  voxtral-mini-transcribe-3-0: { per_minute: 0.00385 } # EU endpoint (1.1x); evaluation only
+
+# per transcription model: evaluated word accuracy, quoted in the transcript's quality note
+# (design §5: disagreement with the other top models and the blind judgments; no reference transcript)
+accuracy_estimates:
+  gemini-4-hydrogen: "about 95 % (94-97 %)"
+  gemini-4-argon: "about 96 % (95-98 %)"
+  gemini-4-carbon: "about 96 % (95-98 %)"
