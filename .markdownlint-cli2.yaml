@@ -22,6 +22,8 @@ ignores:
   - "mutants/**"
   - "node_modules/**"
   - "LICENSE"
+  # written by release-please
+  - "CHANGELOG.md"
   # templates are prompts for models, not documents
   - "recording_transcriber/prompts/**"
   - "examples/*/prompts/**"
