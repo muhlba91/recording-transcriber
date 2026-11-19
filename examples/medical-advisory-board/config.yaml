@@ -6,7 +6,7 @@
 # version the Colab notebook installs, quoted. Release-please sets it to the newest release, so a config
 # from this repository runs the version it was built with (empty: the highest wheel in the app folder, else
 # the latest on PyPI; a release candidate needs its own version, e.g. "1.1.0rc1", and a wheel)
-app_version: "1.0.0" # x-release-please-version
+app_version: "1.1.0" # x-release-please-version
 # true: a wheel in the app folder wins (e.g. a release candidate); none found or false: install the pinned
 # version from PyPI
 local_wheels: true
