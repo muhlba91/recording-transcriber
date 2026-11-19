@@ -4,7 +4,7 @@
 # Unknown keys are rejected.
 
 # version the Colab notebook installs, quoted; release-please sets it to the release this folder came with
-app_version: "1.0.0" # x-release-please-version
+app_version: "1.1.0" # x-release-please-version
 local_wheels: true
 
 # provider and model per task (all Gemini; one key: GEMINI_API_KEY)
