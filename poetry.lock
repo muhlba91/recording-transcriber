@@ -647,14 +647,14 @@ urllib3 = ["packaging (>=20.0)", "urllib3 (>=1.26.15,<3.0.0)"]
 
 [[package]]
 name = "google-genai"
-version = "3.5.0"
+version = "3.6.1"
 description = "GenAI Python SDK"
 optional = false
 python-versions = ">=3.11"
 groups = ["main"]
 files = [
-    {file = "google_genai-3.5.0-py3-none-any.whl", hash = "sha256:2a8320df8a27d4483a95a65211bc787a78a7ba3c8512d0e9e3daabf9d8dda34e"},
-    {file = "google_genai-3.5.0.tar.gz", hash = "sha256:3bf424714df775f38aa8adf6c002d660276a147bec288c55db41cccae6ba2eef"},
+    {file = "google_genai-3.6.1-py3-none-any.whl", hash = "sha256:4b35064da644f61d7e5f6c0e9406bf63b945e7e96b4af18cadb3371cbc3acf74"},
+    {file = "google_genai-3.6.1.tar.gz", hash = "sha256:dfd4120a15ba5aff6a3de8a85d76e1d5d0af65c70a54c459b1c5e76f503e46e7"},
 ]
 
 [package.dependencies]
