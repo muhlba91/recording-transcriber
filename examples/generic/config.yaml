@@ -9,11 +9,11 @@ local_wheels: true
 
 # provider and model per task (all Gemini; one key: GEMINI_API_KEY)
 tasks:
-  transcribe: { provider: gemini, model: gemini-4-hydrogen }
-  polish: { provider: gemini, model: gemini-4-argon }
-  reconcile: { provider: gemini, model: gemini-4-argon }
-  protocol: { provider: gemini, model: gemini-4-argon }
-  agenda: { provider: gemini, model: gemini-4-argon }
+  transcribe: { provider: gemini, model: gemini-4-neon }
+  polish: { provider: gemini, model: gemini-4-carbon }
+  reconcile: { provider: gemini, model: gemini-4-carbon }
+  protocol: { provider: gemini, model: gemini-4-carbon }
+  agenda: { provider: gemini, model: gemini-4-carbon }
 
 # the transcript language and the words the transcript itself uses; everything else is English
 transcript:

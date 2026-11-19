@@ -7,7 +7,7 @@ from docx import Document
 
 from recording_transcriber.audio import chunker
 from recording_transcriber.audio.ffmpeg import Ffmpeg
-from recording_transcriber.configuration.config import Config
+from recording_transcriber.configuration.config import Config, Price
 from recording_transcriber.configuration.job import Job
 from recording_transcriber.models.model_response import ModelResponse
 from recording_transcriber.models.segment import Segment
@@ -30,6 +30,12 @@ from tests.fakes import (
 )
 from tests.pipeline.changes import changes
 from tests.pipeline.recording import RecordingBackend
+
+# a run without a price for a model warns (run.json NO_PRICE)
+_PRICES = {
+    "gemini-4-neon": Price(input=3, output=15),
+    "gemini-4-carbon": Price(input=2, output=10),
+}
 
 _MAPPING = json.dumps(
     {
@@ -81,7 +87,9 @@ class TestPipeline:
 
     @pytest.fixture
     def config(self, tmp_path):
-        yield Config(write_protocol=False, local_dir=tmp_path / "scratch")
+        yield Config(
+            write_protocol=False, local_dir=tmp_path / "scratch", prices=_PRICES
+        )
 
     @pytest.fixture
     def ran(self, job, config):
@@ -166,7 +174,7 @@ class TestPipeline:
     def test_run_model_change_ignores_cache(self, job, config):
         backend = _backend("a", "b")
         assert Pipeline(config, job, backends(backend, backend)).run()
-        config.tasks.transcribe.model = "gemini-4-argon"
+        config.tasks.transcribe.model = "gemini-4-carbon"
         other = _backend("c", "d")
         assert Pipeline(config, job, backends(other, other)).run()
         assert len(other.prompts) == 3
@@ -312,7 +320,7 @@ class TestPipeline:
         assert (job.work_dir / "chunk_01.json").exists()
 
     def test_run_protocol(self, job, tmp_path):
-        config = Config(local_dir=tmp_path / "scratch")
+        config = Config(local_dir=tmp_path / "scratch", prices=_PRICES)
         backend = _backend("Teil eins.", "Teil zwei.")
         backend.completions += [
             completed(document_answer("Teil 1")),
@@ -332,7 +340,7 @@ class TestPipeline:
         assert run["warnings"] == []
 
     def test_run_protocol_fails(self, job, tmp_path):
-        config = Config(local_dir=tmp_path / "scratch")
+        config = Config(local_dir=tmp_path / "scratch", prices=_PRICES)
         backend = _backend("a", "b")
         backend.completions += _FAILURES * 2
         assert Pipeline(config, job, backends(backend, backend)).run()
@@ -347,7 +355,7 @@ class TestPipeline:
 
         monkeypatch.setattr(pipeline_module, "document_docx", broken)
         job.write_output("agenda.md", "old")
-        config = Config(local_dir=tmp_path / "scratch")
+        config = Config(local_dir=tmp_path / "scratch", prices=_PRICES)
         backend = _backend("a", "b")
         backend.completions += [
             completed(document_answer("Teil 1")),
@@ -370,13 +378,13 @@ class TestPipeline:
 
     def test_run_quality_note_off(self, job, config):
         config.transcript.quality_note = False
-        config.accuracy_estimates = {"gemini-4-hydrogen": "about 95 %"}
+        config.accuracy_estimates = {"gemini-4-neon": "about 95 %"}
         backend = _backend("a", "b")
         assert Pipeline(config, job, backends(backend, backend)).run()
         assert "Quality notes" not in (job.out_dir / "transcript.md").read_text()
 
     def test_run_quality_note_estimate(self, job, config):
-        config.accuracy_estimates = {"gemini-4-hydrogen": "about 95 %"}
+        config.accuracy_estimates = {"gemini-4-neon": "about 95 %"}
         backend = _backend("a", "b")
         assert Pipeline(config, job, backends(backend, backend)).run()
         assert "about 95 %" in (job.out_dir / "transcript.md").read_text()
@@ -428,9 +436,9 @@ class TestPipeline:
         config.tasks.agenda.model = "gemini-4-hydrogen"
         assert not Pipeline(config, job, backends(first, second)).run()
         assert checked == [
-            (id(first), "gemini-4-hydrogen"),
+            (id(first), "gemini-4-neon"),
             (id(second), "other"),
-            (id(second), "gemini-4-argon"),
+            (id(second), "gemini-4-carbon"),
             (id(second), "gemini-4-hydrogen"),
         ]
         assert first.closed and second.closed
@@ -514,7 +522,7 @@ def test_run_flags_wpm_outlier(tmp_path, monkeypatch):
     make_audio(job.audio_dir / "rec.mp3", [("tone", 3)])
     backend = _backend("a")
     assert Pipeline(
-        Config(write_protocol=False, local_dir=tmp_path / "scratch"),
+        Config(write_protocol=False, local_dir=tmp_path / "scratch", prices=_PRICES),
         job,
         backends(backend, backend),
     ).run()

@@ -69,7 +69,7 @@ class TestProtocolWriter:
         for data in ("Teil 1", "Teil 3", "Beispiel", "Zweites", "Dr. A, Linz"):
             assert data in final
         assert "Eins." in agenda and "Zwei." in agenda and "TOP 1" in agenda
-        assert backend.calls == ["gemini-4-argon"] * 4
+        assert backend.calls == ["gemini-4-carbon"] * 4
 
     def test_write_uses_cache(self, job):
         self._writer(job, self._backend()).write(_parts())

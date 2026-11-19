@@ -11,6 +11,7 @@ from ..models.paragraph import Paragraph
 from ..models.protocol_result import ProtocolResult
 from ..models.speaker_mapping import SpeakerMapping
 from ..models.usage import Usage
+from ..utils.const import WARNING_NO_PRICE
 from ..utils.cost import estimate_cost
 from ..utils.timestamps import format_timestamp
 
@@ -85,6 +86,19 @@ def run_record(
             costs[step] = estimate_cost(step_usage, config.prices.get(model))
             usage[step] = step_usage.model_dump()
         warnings += protocol.warnings
+    models = {
+        "transcription": tasks.transcribe.model,
+        "reconciliation": tasks.reconcile.model,
+        "polish": tasks.polish.model,
+        "protocol": tasks.protocol.model,
+        "agenda": tasks.agenda.model,
+    }
+    warnings += [
+        f"{WARNING_NO_PRICE}: {model}"
+        for model in sorted(
+            {models[step] for step, cost in costs.items() if cost is None}
+        )
+    ]
     known = [cost for cost in costs.values() if cost is not None]
     # the costs are rounded already; this only removes float noise
     total = round(sum(known), 4) if known else None  # pragma: no mutate

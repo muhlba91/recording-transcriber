@@ -63,13 +63,13 @@ class TasksConfig(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    # evaluation winner: tied with Argon/Carbon on words, cheaper (design §5)
-    transcribe: TaskConfig = TaskConfig(model="gemini-4-hydrogen")
+    # evaluation winner: far ahead of the other Gemini 4 models on words (design §5)
+    transcribe: TaskConfig = TaskConfig(model="gemini-4-neon")
     # the polish pass only runs for verbatim speech-to-text transcribe providers
-    polish: TaskConfig = TaskConfig(model="gemini-4-argon")
-    reconcile: TaskConfig = TaskConfig(model="gemini-4-argon")
-    protocol: TaskConfig = TaskConfig(model="gemini-4-argon")
-    agenda: TaskConfig = TaskConfig(model="gemini-4-argon")
+    polish: TaskConfig = TaskConfig(model="gemini-4-carbon")
+    reconcile: TaskConfig = TaskConfig(model="gemini-4-carbon")
+    protocol: TaskConfig = TaskConfig(model="gemini-4-carbon")
+    agenda: TaskConfig = TaskConfig(model="gemini-4-carbon")
 
 
 class MeetingConfig(BaseModel):

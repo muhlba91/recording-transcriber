@@ -58,12 +58,12 @@ class TestGeminiBackend:
         assert set(backend.describe()) == {"provider", "endpoint", "logging"}
 
     def test_check(self, backend, client):
-        assert backend.check("gemini-4-argon")
-        client.models.get.assert_called_once_with(model="gemini-4-argon")
+        assert backend.check("gemini-4-carbon")
+        client.models.get.assert_called_once_with(model="gemini-4-carbon")
 
     def test_check_error(self, backend, client):
         client.models.get.side_effect = _api_error()
-        assert not backend.check("gemini-4-argon")
+        assert not backend.check("gemini-4-carbon")
 
     def test_transcribe(self, backend, client, tmp_path):
         client.interactions.create.return_value = iter(
@@ -79,7 +79,7 @@ class TestGeminiBackend:
             ]
         )
         response = backend.transcribe(
-            tmp_path / "a.mp3", "prompt", {"type": "object"}, "gemini-4-argon"
+            tmp_path / "a.mp3", "prompt", {"type": "object"}, "gemini-4-carbon"
         )
         assert response.text == '{"turns": []}'
         assert response.status == "completed"
@@ -90,7 +90,7 @@ class TestGeminiBackend:
             thought_tokens=12,
         )
         kwargs = client.interactions.create.call_args.kwargs
-        assert kwargs["model"] == "gemini-4-argon"
+        assert kwargs["model"] == "gemini-4-carbon"
         assert kwargs["input"][0] == {"type": "text", "text": "prompt"}
         assert kwargs["input"][1]["uri"] == "https://f/1"
         assert kwargs["stream"] is True

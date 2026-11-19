@@ -110,7 +110,7 @@ My Drive      Transcriptions/       README.txt, one folder per job:
 - The report (`report/`, offline, blind): 40 disagreement spots (2-6 variants, medical terms first, spread over the recording), optional speaker clips, then the start of the top two candidates rated for readability.
 - Scores (0-100): words = share of spots matching the reviewer's choice (medical counted double); speakers = pairwise same/different agreement; cost = cheapest $/h over the candidate's. Pre-score 0.53 words + 0.35 speakers + 0.12 cost; the final score adds readability (0.45/0.30/0.15/0.10). Within 3 points the cheaper wins.
 
-**Results** on a 53 min test recording in Austrian German (2026-11, ~$3.90 for all runs):
+**First round** on a 53 min test recording in Austrian German (2026-11, ~$3.90 for all runs; Neon was not available yet):
 
 | ID | Candidate | Words (of 40) | Measured $/h | Note |
 |---|---|---|---|---|
@@ -124,14 +124,30 @@ My Drive      Transcriptions/       README.txt, one folder per job:
 | C10 | Mistral Voxtral Mini Transcribe 3 | 4 | 0.28 | |
 | C5 / C6 | `gemini-3.5-transcribe`, 25 min chunks | | | disqualified: silent truncation |
 
-- The four Gemini 4 runs tie (they differ on 9-10 spots). Hydrogen wins by the cost rule.
+- The four Gemini 4 runs tie (they differ on 9-10 spots). Hydrogen won by the cost rule; the second round supersedes this.
 - `chunk_minutes` stays 25, `denoise` stays off (it hurt). Dedicated speech-to-text models are clearly worse on these recordings.
 - Speakers and readability were not scored; they are judged on real jobs via `speakers.md` and the transcript.
 - **Accuracy estimate** (`accuracy_estimates`): word disagreement with Argon and Carbon is 5.8 % for Hydrogen and 11.2-11.6 % for the legacy output; two top runs disagreeing by ~4 % puts each at ≥2 % errors. Estimated word accuracy: Hydrogen ~94-97 %, Argon/Carbon ~95-98 %, legacy ~88-92 %. Errors all models share (e.g. a misheard surname) are invisible.
 
+**Second round** (2026-11-19, the same recording and base config, Argon, Carbon, Hydrogen and the new Neon, blind judging by the maintainer, ~$4.70 including the text-task runs below). Word score is 0-100 (medical spots counted double); readability was rated for the top two only:
+
+| ID | Candidate | Word score | Measured $/h | Readability |
+|---|---|---|---|---|
+| **C11** | **Neon** | **65** | **0.78** | **100** |
+| C2 | Carbon | 34 | 0.46 | 0 |
+| C3 | Hydrogen | 32 | 0.43 | |
+| C1 | Argon | 28 | 0.46 | |
+
+- Neon leads the other three by about 30 points, far outside the 3-point cost rule, so it is the default for `transcribe` although it costs about 80 % more per hour than Hydrogen. Hydrogen stays the cheaper choice for `tasks.transcribe.model`. One recording and 40 spots: the confidence comes from the size of the gap, not from the sample.
+- Word disagreement with the other three is 5.0-5.3 % for Neon against Argon and Carbon, and 6.1 % against Hydrogen; Hydrogen disagrees with Argon and Carbon by 6.3-6.7 %. `accuracy_estimates` gives Neon the same ~95-98 % as Argon and Carbon; the judged lead is not turned into a higher number.
+- Speakers were not scored. Neon marks doubtful names with `(?)` and unclear passages (3 here, Hydrogen marked none). Without an attendee list the first presenter stayed unnamed (16 % of the words unnamed, Hydrogen's transcript 2 %). An attendee list (step 3) is the expected remedy; it was not tested.
+- The text tasks (`polish`, `reconcile`, `protocol`, `agenda`) are outside the harness. The speaker mapping, protocol and agenda were generated on the Hydrogen transcript with Argon, Carbon, Neon and Hydrogen as the text model and read against each other, with checks for numbers missing from the transcript. Carbon matches Argon in detail and faithfulness (protocol 4,070 against 4,592 words, the only addition a unit) at the same price; Neon condenses slightly at 1.8 times the cost ($0.56 against $0.30 for the three text steps); Hydrogen is about 40 % shorter and drops detail.
+- The same four on the Neon transcript leave the content unchanged (Carbon: 4,009 words, 31 of 32 numbers shared with its first-round protocol), so a better transcript does not improve the text. Carbon is the default for the text tasks. This is a reading of the outputs, not a blind judgment.
+- Argon is being deprecated: C1, C7 and C8 stay in `eval/candidates.yaml` for their recorded results and cannot be re-run once it is gone.
+
 ## 6. Cost
 
-Measured per audio hour, at the text rate (Google may bill audio higher): Hydrogen ~$0.44, Argon and Carbon ~$0.47 (double from 2026-12-01), 3.8 Flash ~$0.19. The speaker pass adds about $0.04 per job, protocol and agenda about $0.22 per audio hour. These figures come from the 53 min runs and do not add up exactly for longer recordings: a 3 h job cost $1.71 in total (transcript, speakers, protocol, agenda), about $2-2.50 once Argon (speaker pass, protocol, agenda) doubles. Colab's free CPU runtime suffices.
+Measured per audio hour, at the text rate (Google may bill audio higher): Neon ~$0.73 ($3 and $15 per 1M tokens, no change announced), Hydrogen ~$0.44, Argon and Carbon ~$0.47 (double from 2026-12-01), 3.8 Flash ~$0.19. The speaker pass adds about $0.04 per job, protocol and agenda about $0.22 per audio hour. These figures come from the 53 min runs and do not add up exactly for longer recordings: a 3 h job cost $1.71 in total (transcript, speakers, protocol, agenda), about $2-2.50 once Argon (speaker pass, protocol, agenda) doubles. That job used Hydrogen and Argon; with the Neon and Carbon defaults expect about $2.60, and about $3 once Carbon doubles (estimated from the per-hour figures). Colab's free CPU runtime suffices.
 
 ## 7. Risks and fallbacks
 

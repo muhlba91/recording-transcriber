@@ -48,7 +48,7 @@ class TestConfig:
 
     def test_load_unknown_key(self, tmp_path):
         path = tmp_path / "config.yaml"
-        path.write_text("tasks: {transcrib: {model: gemini-4-argon}}\n")
+        path.write_text("tasks: {transcrib: {model: gemini-4-carbon}}\n")
         assert Config.load(path) is None
 
     def test_load_tasks(self, tmp_path):

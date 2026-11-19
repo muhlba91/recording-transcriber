@@ -62,7 +62,7 @@ The transcript, protocol and agenda use a configurable language; everything else
 | Option | Description | Default |
 |---|---|---|
 | `tasks.<task>.provider` | Provider per task (`transcribe`, `polish`, `reconcile`, `protocol`, `agenda`): `gemini` (general model; transcription with the prompt and all text tasks), `gemini-transcribe`, `gemini-transcribe-smart` (speech-to-text, transcribe only; target capped at 25 min, so chunks stay at 28 min or less), `openai`, `mistral` (speech-to-text for `transcribe`, chat models for the text tasks; evaluation only, see the provider note below) or a custom provider (text tasks only). `polish` only runs after `gemini-transcribe` | `gemini` |
-| `tasks.<task>.model` | Model per task | `gemini-4-hydrogen` for `transcribe`, `gemini-4-argon` for the others |
+| `tasks.<task>.model` | Model per task | `gemini-4-neon` for `transcribe`, `gemini-4-carbon` for the others |
 | `providers.<name>.base_url` | Custom OpenAI-compatible endpoint (chat completions with JSON-schema output) for text tasks | required per provider |
 | `providers.<name>.api_key_env` | Environment variable that holds its key | required per provider |
 | `write_protocol` | Write the protocol and the agenda after the transcript (the evaluation turns it off) | `true` |

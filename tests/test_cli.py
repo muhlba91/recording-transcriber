@@ -28,11 +28,11 @@ class TestCli:
     def test_main(self, calls, tmp_path):
         assert (
             cli.main(
-                ["run", "--job", str(tmp_path / "job"), "--model", "gemini-4-argon"]
+                ["run", "--job", str(tmp_path / "job"), "--model", "gemini-4-carbon"]
             )
             == 0
         )
-        assert calls["config"].tasks.transcribe.model == "gemini-4-argon"
+        assert calls["config"].tasks.transcribe.model == "gemini-4-carbon"
         assert calls["job"].name == "job"
         assert "transcribe" in calls["backends"]
 

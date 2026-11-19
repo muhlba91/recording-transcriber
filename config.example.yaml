@@ -24,11 +24,11 @@ local_wheels: true
 # your custom providers. Keys: GEMINI_API_KEY, OPENAI_API_KEY, MISTRAL_API_KEY; only the providers in use
 # need one. polish runs after speech-to-text models that keep fillers (gemini-transcribe).
 tasks:
-  transcribe: { provider: gemini, model: gemini-4-hydrogen }
-  polish: { provider: gemini, model: gemini-4-argon }
-  reconcile: { provider: gemini, model: gemini-4-argon }
-  protocol: { provider: gemini, model: gemini-4-argon }
-  agenda: { provider: gemini, model: gemini-4-argon }
+  transcribe: { provider: gemini, model: gemini-4-neon }
+  polish: { provider: gemini, model: gemini-4-carbon }
+  reconcile: { provider: gemini, model: gemini-4-carbon }
+  protocol: { provider: gemini, model: gemini-4-carbon }
+  agenda: { provider: gemini, model: gemini-4-carbon }
 
 # the transcript language and the words the transcript itself uses; everything else is English
 transcript:
@@ -61,11 +61,13 @@ local_dir:
 
 # USD per 1M tokens, for the cost estimate in run.json (thinking counts as output), keyed by model
 prices:
-  gemini-4-argon: { input: 2.00, output: 10.00 }
+  gemini-4-neon: { input: 3.00, output: 15.00 }
+  gemini-4-carbon: { input: 2.00, output: 10.00 }   # 4.00 / 20.00 from 2026-12-01
   gemini-4-hydrogen: { input: 1.50, output: 7.50 }
+  gemini-4-argon: { input: 2.00, output: 10.00 }    # being deprecated; 4.00 / 20.00 from 2026-12-01
   # speech-to-text models: USD per audio minute
   gemini-3.5-transcribe: { per_minute: 0.005 }
 
 # per transcription model: evaluated word accuracy, quoted in the transcript's quality note
 # accuracy_estimates:
-#   gemini-4-hydrogen: "about 95 %"
+#   gemini-4-neon: "about 96 %"

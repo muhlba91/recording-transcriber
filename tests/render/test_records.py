@@ -24,7 +24,7 @@ _ENVIRONMENT = {"app_version", "config_app_version", "python"}
 def _result() -> ChunkResult:
     return ChunkResult(
         span=ChunkSpan(index=0, start_s=0, end_s=60),
-        model="gemini-4-argon",
+        model="gemini-4-carbon",
         turns=[],
         roster=[],
         usage=Usage(input_audio_tokens=1_000_000),
@@ -48,11 +48,11 @@ def test_transcript_record():
 
 def test_run_record():
     config = Config(
-        tasks={"transcribe": {"model": "gemini-4-argon"}},
-        prices={"gemini-4-argon": Price(input=2, output=10)},
+        tasks={"transcribe": {"model": "gemini-4-carbon"}},
+        prices={"gemini-4-carbon": Price(input=2, output=10)},
     )
     mapping = SpeakerMapping(
-        model="gemini-4-argon",
+        model="gemini-4-carbon",
         usage=Usage(output_tokens=100_000),
         warnings=["RECONCILIATION_FAILED"],
     )
@@ -60,7 +60,7 @@ def test_run_record():
     record = run_record("job", config, _BACKENDS, [_result()], mapping, now, now)
     assert record["tasks"]["transcribe"] == {
         "provider": "gemini",
-        "model": "gemini-4-argon",
+        "model": "gemini-4-carbon",
         "service": "p",
         "endpoint": "e",
         "logging": "l",
@@ -78,8 +78,8 @@ def test_run_record():
 def test_run_record_fields():
     config = Config(
         app_version="1.0.0",
-        tasks={"transcribe": {"model": "gemini-4-argon"}},
-        prices={"gemini-4-argon": Price(input=2.5, output=10)},
+        tasks={"transcribe": {"model": "gemini-4-carbon"}},
+        prices={"gemini-4-carbon": Price(input=2.5, output=10)},
         chunk_minutes=30,
         denoise=True,
         thinking_level="high",
@@ -119,7 +119,7 @@ def test_run_record_fields():
             "index": 1,
             "start": "00:01:00",
             "end": "00:02:05",
-            "model": "gemini-4-argon",
+            "model": "gemini-4-carbon",
             "attempts": 2,
             "turns": 1,
             "warnings": ["TAIL_GAP"],
@@ -160,7 +160,7 @@ def test_run_record_polish():
         transcript={"language": "de-DE"},
         prices={
             "gemini-3.5-transcribe": Price(per_minute=0.005),
-            "gemini-4-argon": Price(input=2, output=10),
+            "gemini-4-carbon": Price(input=2, output=10),
         },
     )
     result = _result()
@@ -174,7 +174,12 @@ def test_run_record_polish():
 
 
 def test_run_record_protocol():
-    config = Config(prices={"gemini-4-argon": Price(input=2, output=10)})
+    config = Config(
+        prices={
+            "gemini-4-neon": Price(input=3, output=15),
+            "gemini-4-carbon": Price(input=2, output=10),
+        }
+    )
     mapping = SpeakerMapping(warnings=["RECONCILIATION_FAILED"])
     protocol = ProtocolResult(
         protocol_usage=Usage(output_tokens=100_000),
@@ -202,3 +207,17 @@ def test_run_record_settings(tmp_path):
     assert settings["meeting"]["type"] == "board"
     record = run_record("job", Config(), _BACKENDS, [], SpeakerMapping(), now, now)
     assert record["settings"]["prompts_replaced"] == []
+
+
+def test_run_record_no_price():
+    config = Config(tasks={"transcribe": {"model": "gemini-4-neon"}})
+    now = datetime(2026, 11, 14, tzinfo=UTC)
+    record = run_record(
+        "job", config, _BACKENDS, [_result()], SpeakerMapping(), now, now
+    )
+    assert record["cost_usd"]["total"] is None
+    assert record["warnings"] == [
+        "NO_PRICE: gemini-4-carbon",
+        "NO_PRICE: gemini-4-neon",
+        "part 1: TAIL_GAP",
+    ]

@@ -13,11 +13,11 @@ local_wheels: true
 
 # provider and model per task (all Gemini; one key: GEMINI_API_KEY)
 tasks:
-  transcribe: { provider: gemini, model: gemini-4-hydrogen }   # evaluation winner (docs/design.md §5)
-  polish: { provider: gemini, model: gemini-4-argon }
-  reconcile: { provider: gemini, model: gemini-4-argon }
-  protocol: { provider: gemini, model: gemini-4-argon }
-  agenda: { provider: gemini, model: gemini-4-argon }
+  transcribe: { provider: gemini, model: gemini-4-neon }   # evaluation winner (docs/design.md §5)
+  polish: { provider: gemini, model: gemini-4-carbon }
+  reconcile: { provider: gemini, model: gemini-4-carbon }
+  protocol: { provider: gemini, model: gemini-4-carbon }
+  agenda: { provider: gemini, model: gemini-4-carbon }
 
 # the transcript language and the words the transcript itself uses; everything else is English
 transcript:
@@ -50,9 +50,10 @@ local_dir:
 
 # USD per 1M tokens, for the cost estimate in run.json (thinking counts as output)
 prices:
-  gemini-4-argon: { input: 2.00, output: 10.00 }     # 4.00 / 20.00 from 2026-12-01
+  gemini-4-argon: { input: 2.00, output: 10.00 }     # being deprecated; 4.00 / 20.00 from 2026-12-01
   gemini-4-carbon: { input: 2.00, output: 10.00 }    # 4.00 / 20.00 from 2026-12-01
   gemini-4-hydrogen: { input: 1.50, output: 7.50 }
+  gemini-4-neon: { input: 3.00, output: 15.00 }
   gemini-3.8-flash: { input: 0.75, output: 3.75 }    # 1.50 / 7.50 from 2027-01-01
   # speech-to-text models: USD per audio minute
   gemini-3.5-transcribe: { per_minute: 0.005 }
@@ -62,6 +63,7 @@ prices:
 # per transcription model: evaluated word accuracy, quoted in the transcript's quality note
 # (design §5: disagreement with the other top models and the blind judgments; no reference transcript)
 accuracy_estimates:
+  gemini-4-neon: "about 96 % (95-98 %)"
   gemini-4-hydrogen: "about 95 % (94-97 %)"
   gemini-4-argon: "about 96 % (95-98 %)"
   gemini-4-carbon: "about 96 % (95-98 %)"

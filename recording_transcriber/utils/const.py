@@ -121,6 +121,8 @@ WARNING_RECONCILIATION = "RECONCILIATION_FAILED"
 WARNING_POLISH = "POLISH_FAILED"
 WARNING_PROTOCOL = "PROTOCOL_FAILED"
 WARNING_AGENDA = "AGENDA_FAILED"
+# run.json only: a model without a price in the config is missing from the cost total
+WARNING_NO_PRICE = "NO_PRICE"
 
 # speaker confidence
 CONFIDENCE_HIGH = "high"
