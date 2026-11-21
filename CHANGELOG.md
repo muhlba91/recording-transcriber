@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.1](https://github.com/muhlba91/recording-transcriber/compare/v1.1.0...v1.1.1) (2026-11-21)
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency coverage to v7.17.4 ([dce5502](https://github.com/muhlba91/recording-transcriber/commit/dce5502cf6aff8cbd156541ae9b9347c39e1735e))
+* **deps:** update dependency npm:markdownlint-cli2 to v0.24.2 ([ac99da1](https://github.com/muhlba91/recording-transcriber/commit/ac99da1507fedf50b96d703ce3aa2bc988c295b8))
+* **deps:** update dependency pyyaml to v6.0.4 ([c9b69a1](https://github.com/muhlba91/recording-transcriber/commit/c9b69a12a2b584d1463c4f879f0bbc234c320c4c))
+* **deps:** update github/codeql-action action to v4.39.4 ([6112283](https://github.com/muhlba91/recording-transcriber/commit/6112283be60da8cd7d2a8d2fe6412474146ba7cb))
+
 ## [1.1.0](https://github.com/muhlba91/recording-transcriber/compare/v1.0.0...v1.1.0) (2026-11-19)
 
 
