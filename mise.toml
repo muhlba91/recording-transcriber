@@ -14,7 +14,6 @@ node = "26.13.1"
 "npm:markdownlint-cli2" = "0.24.2"
 actionlint = "1.7.12"
 shellcheck = "0.11.0"
-yamllint = "1.38.0"
 
 [env]
 _.python.venv = { path = ".venv", create = true, uv_create_args = ["--seed"] }
