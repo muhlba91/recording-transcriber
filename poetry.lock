@@ -830,20 +830,20 @@ all = ["coverage (>=7.10.0)", "hypothesis (>=6.141.1)", "mypy (>=1.11.2)", "pyte
 
 [[package]]
 name = "imageio-ffmpeg"
-version = "0.8.1"
+version = "0.8.2"
 description = "FFMPEG wrapper for Python"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "imageio_ffmpeg-0.8.1-py3-none-macosx_10_13_x86_64.whl", hash = "sha256:9538a10e598257263b5de1a1c1b86e7603417bc219245b1e279b452e5e48cc20"},
-    {file = "imageio_ffmpeg-0.8.1-py3-none-macosx_12_0_arm64.whl", hash = "sha256:5636d691e36e5274b13fe38182b1f627b2e35dcecc63944012c2470f9484fc45"},
-    {file = "imageio_ffmpeg-0.8.1-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:fad3176f859b25869e60a8ed79957d4e3ed74a97a95e5f0cdcb91455f6c6d00e"},
-    {file = "imageio_ffmpeg-0.8.1-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:050d6850601c3b3890bd2b28306f3b842b3daea390a561101174375a1c460bda"},
-    {file = "imageio_ffmpeg-0.8.1-py3-none-win32.whl", hash = "sha256:4f1213a47d9c3e819d5953671bc45d133a7d3a00c40a2934a9b1356933bee4e9"},
-    {file = "imageio_ffmpeg-0.8.1-py3-none-win_amd64.whl", hash = "sha256:f27ca4cb85e2d4946deedbce1a81245dfd942a2bcf94b53676fb3956aa95bf1b"},
-    {file = "imageio_ffmpeg-0.8.1-py3-none-win_arm64.whl", hash = "sha256:0b7079e63dc34f97e43db5a5b7b9efb85edc1c6623313e0a4a17ebc7c2ce7a51"},
-    {file = "imageio_ffmpeg-0.8.1.tar.gz", hash = "sha256:9e5162fa482c3c45a6703b2223947d15c37730e63b048d64937fa80243aa5a0c"},
+    {file = "imageio_ffmpeg-0.8.2-py3-none-macosx_10_13_x86_64.whl", hash = "sha256:f9cbd6416cf0238f0e94167d91b3326b22d4588eeae1fd788c2e7cac9fc0c7c5"},
+    {file = "imageio_ffmpeg-0.8.2-py3-none-macosx_12_0_arm64.whl", hash = "sha256:113f7c0b6ea4bbc67005ddb0d8b63ed27a35b01c13c79ea9c459442f627aa4f3"},
+    {file = "imageio_ffmpeg-0.8.2-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:adc2265a001ea60b92b11898c01e47a4d1f3ff8443d7d5992c8e907dbfe8da92"},
+    {file = "imageio_ffmpeg-0.8.2-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:4749aa8d7c46c0c194373e97d0dba0b8cee66cd1c4fcea84a91ac37d46f79dc1"},
+    {file = "imageio_ffmpeg-0.8.2-py3-none-win32.whl", hash = "sha256:e969f58f6aff16028943ee3185728a689cb9b74f7d7a43156a7d94318c1ed2cd"},
+    {file = "imageio_ffmpeg-0.8.2-py3-none-win_amd64.whl", hash = "sha256:c5d528e1daa9c17c71d7a600c31e1a0983ca739a20dd014159b2b7431b0b1ea7"},
+    {file = "imageio_ffmpeg-0.8.2-py3-none-win_arm64.whl", hash = "sha256:bfff5584740caa1e84375f53d3e7dc2dd12051d5c56e3bc3611c76c6e2300c76"},
+    {file = "imageio_ffmpeg-0.8.2.tar.gz", hash = "sha256:f818b96bcc4af49ac5fd91c69c9b3b4dbb1ed7a7f2209c27f623ccecf38f2be3"},
 ]
 
 [[package]]
