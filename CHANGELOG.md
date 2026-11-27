@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.1.1](https://github.com/muhlba91/recording-transcriber/compare/v1.1.0...v1.1.1) (2026-11-27)
+
+
+### Bug Fixes
+
+* **ci:** move yamllint to poetry ([f3bd8b6](https://github.com/muhlba91/recording-transcriber/commit/f3bd8b642ccfd777a737e389172c805cb04a15b0))
+
+
+### Miscellaneous Chores
+
+* **ci:** add actionlint job ([0e38582](https://github.com/muhlba91/recording-transcriber/commit/0e3858208e6c164226587413e8265eef7fd573b5))
+* **deps:** update dependency coverage to v7.17.4 ([dce5502](https://github.com/muhlba91/recording-transcriber/commit/dce5502cf6aff8cbd156541ae9b9347c39e1735e))
+* **deps:** update dependency coverage to v7.17.5 ([9d2769c](https://github.com/muhlba91/recording-transcriber/commit/9d2769ca00778a4825976cebce39524d00beaf09))
+* **deps:** update dependency httpx to ^0.29.0 ([3e68eaa](https://github.com/muhlba91/recording-transcriber/commit/3e68eaa64645ba26a84f7a5a6fa9537d4a7e52c9))
+* **deps:** update dependency imageio-ffmpeg to v0.8.2 ([a0a010d](https://github.com/muhlba91/recording-transcriber/commit/a0a010dcf70cf7542fbffa1e9efa81b9387ee780))
+* **deps:** update dependency npm:markdownlint-cli2 to v0.24.2 ([ac99da1](https://github.com/muhlba91/recording-transcriber/commit/ac99da1507fedf50b96d703ce3aa2bc988c295b8))
+* **deps:** update dependency pyyaml to v6.0.4 ([c9b69a1](https://github.com/muhlba91/recording-transcriber/commit/c9b69a12a2b584d1463c4f879f0bbc234c320c4c))
+* **deps:** update github/codeql-action action to v4.39.4 ([6112283](https://github.com/muhlba91/recording-transcriber/commit/6112283be60da8cd7d2a8d2fe6412474146ba7cb))
+* **deps:** update github/codeql-action action to v4.39.5 ([891bf02](https://github.com/muhlba91/recording-transcriber/commit/891bf0220d6512c3bfc42f26a0106ed66eb46a75))
+* **deps:** update jdx/mise-action action to v5.3.0 ([3e8351c](https://github.com/muhlba91/recording-transcriber/commit/3e8351c760871853520a1eb106930d9ae7483f70))
+* **deps:** update pre-commit hook astral-sh/ruff-pre-commit to v0.17.6 ([374fb75](https://github.com/muhlba91/recording-transcriber/commit/374fb75fbfa3d54dbdff840392293dc7acb1267c))
+* **deps:** update pre-commit hook gitleaks/gitleaks to v8.30.1 ([3e9110f](https://github.com/muhlba91/recording-transcriber/commit/3e9110fd97116073e695aab36e1df7ff36e7d2df))
+* update pre-commit config ([68e9258](https://github.com/muhlba91/recording-transcriber/commit/68e92581cd978be831959a2dd2f7e00b63f3932f))
+
 ## [1.1.0](https://github.com/muhlba91/recording-transcriber/compare/v1.0.0...v1.1.0) (2026-11-19)
 
 
